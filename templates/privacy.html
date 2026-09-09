@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Privacy Policy — Spendly{% endblock %}
+
+{% block content %}
+<div class="legal-page">
+    <div class="legal-container">
+        <header class="legal-header">
+            <span class="hero-badge">Privacy</span>
+            <h1 class="legal-title">Privacy Policy</h1>
+            <p class="legal-subtitle">Last updated: March 2026</p>
+        </header>
+
+        <div class="legal-card">
+            <section class="legal-section">
+                <h2>1. Data We Collect</h2>
+                <p>
+                    When you use Spendly, we collect information you provide directly to us when creating an account (such as your name and email address) and the expense details you record (including expense amounts, dates, categories, and descriptions). We also collect basic technical data like browser type and log timestamps to ensure site performance and security.
+                </p>
+            </section>
+
+            <section class="legal-section">
+                <h2>2. How We Use Your Data</h2>
+                <p>
+                    We use your data solely to provide, personalize, and maintain the Spendly service. This includes calculating your spending summaries, generating category analytics, authenticating your login sessions, and helping you track your personal financial trends. We never use your financial logs for advertising or profiling.
+                </p>
+            </section>
+
+            <section class="legal-section">
+                <h2>3. Data Storage</h2>
+                <p>
+                    Your data is stored securely using industry-standard encryption and protection measures. Passwords are cryptographically hashed before being stored in our database, meaning they cannot be read or retrieved in plaintext. We implement technical and administrative safeguards to prevent unauthorized access, alteration, or disclosure.
+                </p>
+            </section>
+
+            <section class="legal-section">
+                <h2>4. Third Party Services</h2>
+                <p>
+                    Spendly does not sell, rent, or trade your personal financial data to third-party marketers or advertisers. We only interact with trusted third-party providers necessary for operational infrastructure (such as secure hosting environments and CDN font providers like Google Fonts), all of which are bound by confidentiality obligations.
+                </p>
+            </section>
+
+            <section class="legal-section">
+                <h2>5. Contact Us</h2>
+                <p>
+                    If you have any questions, concerns, or requests regarding this Privacy Policy or your personal information, please reach out to us at <a href="mailto:privacy@spendly.app" class="legal-link">privacy@spendly.app</a> or via our support channels.
+                </p>
+            </section>
+
+            <div class="legal-footer-nav">
+                <a href="{{ url_for('landing') }}" class="btn-ghost">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
