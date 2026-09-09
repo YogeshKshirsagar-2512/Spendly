@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Terms and Conditions — Spendly{% endblock %}
+
+{% block content %}
+<div class="legal-page">
+    <div class="legal-container">
+        <header class="legal-header">
+            <span class="hero-badge">Legal</span>
+            <h1 class="legal-title">Terms and Conditions</h1>
+            <p class="legal-subtitle">Last updated: March 2026</p>
+        </header>
+
+        <div class="legal-card">
+            <section class="legal-section">
+                <h2>1. Acceptance of Terms</h2>
+                <p>
+                    By accessing or using Spendly ("the Service"), you agree to be bound by these Terms and Conditions. If you disagree with any part of these terms, you may not access or use the Service.
+                </p>
+            </section>
+
+            <section class="legal-section">
+                <h2>2. Use of Service</h2>
+                <p>
+                    Spendly is a personal finance management tool intended to assist you in tracking and organizing your personal expenses. You agree to use the Service solely for lawful, personal, and non-commercial purposes. You are responsible for safeguarding your account credentials and for all activities that occur under your account.
+                </p>
+            </section>
+
+            <section class="legal-section">
+                <h2>3. User Data</h2>
+                <p>
+                    You retain full ownership of all financial figures, notes, and records you input into Spendly. We respect your privacy and protect your data in accordance with standard security practices. Spendly does not sell or distribute your financial entries to third parties. You are responsible for maintaining your own backups of your financial records.
+                </p>
+            </section>
+
+            <section class="legal-section">
+                <h2>4. Limitations of Liability</h2>
+                <p>
+                    Spendly provides expense calculation and tracking tools "as is" and "as available." Spendly is not a licensed financial advisor, tax planner, or accounting firm. Information provided by the Service should not be construed as professional financial advice. To the maximum extent permitted by applicable law, Spendly shall not be liable for any direct, indirect, incidental, or consequential damages resulting from your use or inability to use the Service.
+                </p>
+            </section>
+
+            <section class="legal-section">
+                <h2>5. Changes to Terms</h2>
+                <p>
+                    We reserve the right to revise or modify these Terms and Conditions at any time. Any changes will become effective immediately upon posting to this page. Your continued use of Spendly after any modifications indicates your acceptance of the updated terms.
+                </p>
+            </section>
+
+            <div class="legal-footer-nav">
+                <a href="{{ url_for('landing') }}" class="btn-ghost">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
