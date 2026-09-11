@@ -136,3 +136,174 @@ def test_register_redirect_when_logged_in(client):
     response = client.get("/register")
     assert response.status_code == 302
     assert response.headers["Location"] == "/"
+
+
+# ------------------------------------------------------------------ #
+# Login & Session Management Tests (Step 3)                          #
+# ------------------------------------------------------------------ #
+
+def test_login_page_loads(client):
+    """Test that the login page loads with required form fields."""
+    response = client.get("/login")
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+    assert "Welcome back" in html
+    assert 'name="email"' in html
+    assert 'name="password"' in html
+
+
+def test_login_success(client):
+    """Test successful login sets session and redirects."""
+    # Register user
+    client.post(
+        "/register",
+        data={"name": "Karan Johar", "email": "karan@example.com", "password": "password123"},
+    )
+
+    # Login
+    response = client.post(
+        "/login",
+        data={"email": "karan@example.com", "password": "password123"},
+        follow_redirects=False,
+    )
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/"
+
+    # Verify session values
+    with client.session_transaction() as sess:
+        assert sess["user_id"] is not None
+        assert sess["user_name"] == "Karan Johar"
+        assert sess["user_email"] == "karan@example.com"
+
+    # Follow redirect
+    follow_resp = client.get("/")
+    assert "Welcome back, Karan Johar!" in follow_resp.get_data(as_text=True)
+
+
+def test_login_invalid_password(client):
+    """Test login with incorrect password returns 401."""
+    client.post(
+        "/register",
+        data={"name": "Rohan Mehra", "email": "rohan@example.com", "password": "correctPassword123"},
+    )
+
+    response = client.post(
+        "/login",
+        data={"email": "rohan@example.com", "password": "wrongPassword"},
+    )
+    assert response.status_code == 401
+    html = response.get_data(as_text=True)
+    assert "Invalid email address or password." in html
+    assert 'value="rohan@example.com"' in html
+
+
+def test_login_nonexistent_email(client):
+    """Test login with non-existent user returns 401 with generic error."""
+    response = client.post(
+        "/login",
+        data={"email": "nobody@example.com", "password": "anyPassword123"},
+    )
+    assert response.status_code == 401
+    assert "Invalid email address or password." in response.get_data(as_text=True)
+
+
+def test_login_missing_fields(client):
+    """Test login with missing email or password returns 400."""
+    res1 = client.post("/login", data={"email": "", "password": "password123"})
+    assert res1.status_code == 400
+    assert "Please provide both email and password." in res1.get_data(as_text=True)
+
+    res2 = client.post("/login", data={"email": "user@example.com", "password": ""})
+    assert res2.status_code == 400
+    assert "Please provide both email and password." in res2.get_data(as_text=True)
+
+
+def test_login_safe_next_redirect(client):
+    """Test login respects safe internal next URL parameter."""
+    client.post(
+        "/register",
+        data={"name": "Ananya Roy", "email": "ananya@example.com", "password": "password123"},
+    )
+
+    response = client.post(
+        "/login?next=/profile",
+        data={"email": "ananya@example.com", "password": "password123"},
+    )
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/profile"
+
+
+def test_login_open_redirect_mitigated(client):
+    """Test open redirect vulnerability is mitigated by defaulting to landing page."""
+    client.post(
+        "/register",
+        data={"name": "Safe User", "email": "safe@example.com", "password": "password123"},
+    )
+
+    # Malicious external URL
+    response = client.post(
+        "/login?next=https://malicious-phishing.com",
+        data={"email": "safe@example.com", "password": "password123"},
+    )
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/"
+
+    # Protocol-relative URL
+    response2 = client.post(
+        "/login?next=//malicious-phishing.com",
+        data={"email": "safe@example.com", "password": "password123"},
+    )
+    assert response2.status_code == 302
+    assert response2.headers["Location"] == "/"
+
+
+def test_logout(client):
+    """Test logout clears session and redirects to login with flash notice."""
+    with client.session_transaction() as sess:
+        sess["user_id"] = 1
+        sess["user_name"] = "Logged In User"
+
+    response = client.get("/logout")
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/login"
+
+    # Verify session cleared
+    with client.session_transaction() as sess:
+        assert "user_id" not in sess
+
+    # Follow redirect
+    follow_resp = client.get("/login")
+    assert "You have been signed out." in follow_resp.get_data(as_text=True)
+
+
+def test_login_required_protection(client):
+    """Test accessing protected route without session redirects to login with next param."""
+    response = client.get("/profile")
+    assert response.status_code == 302
+    assert response.headers["Location"] in ["/login?next=/profile", "/login?next=%2Fprofile"]
+
+    # Flash warning visible on login page
+    follow_resp = client.get("/login")
+    assert "Please sign in to access this page." in follow_resp.get_data(as_text=True)
+
+
+def test_navbar_rendering_authenticated(client):
+    """Test dynamic navbar display for guest vs authenticated states."""
+    # Guest view
+    guest_resp = client.get("/")
+    guest_html = guest_resp.get_data(as_text=True)
+    assert "Sign in" in guest_html
+    assert "Get started" in guest_html
+    assert "Sign out" not in guest_html
+
+    # Authenticated view
+    with client.session_transaction() as sess:
+        sess["user_id"] = 42
+        sess["user_name"] = "Vikram Aditya"
+
+    auth_resp = client.get("/")
+    auth_html = auth_resp.get_data(as_text=True)
+    assert "Hi, Vikram" in auth_html
+    assert "Profile" in auth_html
+    assert "Sign out" in auth_html
+    assert "Get started" not in auth_html

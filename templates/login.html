@@ -13,23 +13,19 @@
         </div>
 
         <div class="auth-card">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                    <div class="auth-flash auth-flash-{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
             {% if error %}
             <div class="auth-error">{{ error }}</div>
             {% endif %}
 
             <form method="POST" action="/login">
+                {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
                 <div class="form-group">
                     <label for="email">Email address</label>
                     <input type="email" id="email" name="email"
                            class="form-input" placeholder="nitish@example.com"
+                           value="{{ email|default('', true) }}"
                            required autofocus>
                 </div>
                 <div class="form-group">
