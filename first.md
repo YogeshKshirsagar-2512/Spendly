@@ -128,10 +128,11 @@ Rendered HTML response to browser
 - [x] Initial UI Templates (Landing, Login, Register, Base layout)
 - [x] Styling & Assets setup
 - [x] Repository initialized and pushed to GitHub
-- [ ] **Step 1:** Database setup in `database/db.py` (`get_db`, `init_db`, `seed_db`)
-- [ ] **Step 2:** User registration with password hashing
+- [x] **Step 1:** Database setup in `database/db.py` (`get_db`, `init_db`, `seed_db`)
+- [x] **Step 2:** User registration with password hashing
 - [ ] **Step 3:** User login & session management (`/login`, `/logout`)
 - [ ] **Step 4:** User profile view (`/profile`)
+
 - [ ] **Step 5:** Expense listing & monthly summary dashboard
 - [ ] **Step 6:** Category breakdown calculations
 - [ ] **Step 7:** Add new expense endpoint (`/expenses/add`)
