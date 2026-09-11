@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — Spendly{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+
+    <!-- Flash Feedback -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="profile-flash-wrapper">
+          {% for category, message in messages %}
+            <div class="auth-flash auth-flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Profile Hero Card -->
+    <section class="profile-hero">
+        <div class="profile-avatar" aria-label="User Avatar">
+            {{ initials }}
+        </div>
+        <div class="profile-identity">
+            <h1 class="profile-name">{{ user['name'] }}</h1>
+            <div class="profile-meta">
+                <span class="profile-email">{{ user['email'] }}</span>
+                <span class="meta-dot">•</span>
+                <span class="profile-joined">Member since {{ user['created_at'][:7] }}</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Financial Activity Metrics -->
+    <section class="profile-metrics-grid">
+        <div class="metric-card">
+            <span class="metric-label">Total Expenditure</span>
+            <div class="metric-value">₹{{ "%.2f"|format(stats['total_spent']) }}</div>
+            <span class="metric-hint">Lifetime expenses logged</span>
+        </div>
+
+        <div class="metric-card">
+            <span class="metric-label">Transactions</span>
+            <div class="metric-value">{{ stats['total_count'] }}</div>
+            <span class="metric-hint">Total recorded entries</span>
+        </div>
+
+        <div class="metric-card">
+            <span class="metric-label">Active Categories</span>
+            <div class="metric-value">{{ stats['category_count'] }}</div>
+            <span class="metric-hint">Spending classifications</span>
+        </div>
+    </section>
+
+    <!-- Two-Column Settings Forms -->
+    <section class="profile-settings-grid">
+        <!-- Personal Information Card -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <h2 class="settings-title">Personal Details</h2>
+                <p class="settings-subtitle">Update your account name and email address.</p>
+            </div>
+            <form action="{{ url_for('update_profile') }}" method="POST" class="settings-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" class="form-input" value="{{ user['name'] }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" value="{{ user['email'] }}" required>
+                </div>
+                <button type="submit" class="btn-primary">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- Security & Password Card -->
+        <div class="settings-card">
+            <div class="settings-header">
+                <h2 class="settings-title">Security & Password</h2>
+                <p class="settings-subtitle">Update your password to keep your account safe.</p>
+            </div>
+            <form action="{{ url_for('update_password') }}" method="POST" class="settings-form">
+                <div class="form-group">
+                    <label for="current_password">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" class="form-input" required autocomplete="current-password">
+                </div>
+                <div class="form-group">
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password" class="form-input" minlength="6" required autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="confirm_password">Confirm New Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-input" minlength="6" required autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn-primary">Update Password</button>
+            </form>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
