@@ -12,6 +12,7 @@
 </head>
 <body>
 
+    {% block navbar %}
     <nav class="navbar">
         <div class="nav-inner">
             <a href="{{ url_for('landing') }}" class="nav-brand">
@@ -30,6 +31,7 @@
             </div>
         </div>
     </nav>
+    {% endblock %}
 
     <main class="main-content">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -44,6 +46,7 @@
         {% block content %}{% endblock %}
     </main>
 
+    {% block footer %}
     <footer class="footer">
         <div class="footer-inner">
             <span class="brand-icon">◈</span>
@@ -55,6 +58,7 @@
             </div>
         </div>
     </footer>
+    {% endblock %}
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     {% block scripts %}{% endblock %}

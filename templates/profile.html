@@ -1,156 +1,616 @@
 {% extends "base.html" %}
 
-{% block title %}My Profile — Spendly{% endblock %}
+{% block title %}Overview — Cashora{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block navbar %}
+<!-- Full-width Modern Dashboard layout overrides default top navigation -->
+{% endblock %}
+
+{% block footer %}
+<!-- Full-width Modern Dashboard layout overrides default footer -->
+{% endblock %}
 
 {% block content %}
-<div class="profile-page">
-    <div class="profile-page-header">
-        <span class="profile-eyebrow">Account Settings</span>
-        <h1 class="profile-page-title">Personal Profile</h1>
-        <p class="profile-page-subtitle">Manage your personal details, credentials, and view an overview of your spending activity.</p>
+<div class="dash-layout">
+
+    <!-- Left Sidebar -->
+    <aside class="dash-sidebar">
+        <div>
+            <!-- Brand -->
+            <a href="{{ url_for('profile') }}" class="sidebar-brand">
+                <div class="brand-icon-box">◈</div>
+                <span class="brand-title">Cashora</span>
+            </a>
+
+            <!-- Menu Navigation -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-title">Menu</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item active">
+                        <a href="{{ url_for('profile') }}">
+                            <div class="nav-item-left">
+                                <span class="nav-icon">⊞</span>
+                                <span>Dashboard</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#analytics">
+                            <div class="nav-item-left">
+                                <span class="nav-icon">📈</span>
+                                <span>Analytics</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#insights">
+                            <div class="nav-item-left">
+                                <span class="nav-icon">💡</span>
+                                <span>Insights</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#updates">
+                            <div class="nav-item-left">
+                                <span class="nav-icon">🕒</span>
+                                <span>Updates</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#chat">
+                            <div class="nav-item-left">
+                                <span class="nav-icon">💬</span>
+                                <span>Chat</span>
+                            </div>
+                            <span class="badge-counter">20</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- General Navigation -->
+            <div class="sidebar-section">
+                <span class="sidebar-section-title">General</span>
+                <ul class="sidebar-menu">
+                    <li class="sidebar-item">
+                        <button type="button" onclick="openSettingsModal()">
+                            <div class="nav-item-left">
+                                <span class="nav-icon">⚙️</span>
+                                <span>Settings</span>
+                            </div>
+                        </button>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#help">
+                            <div class="nav-item-left">
+                                <span class="nav-icon">❓</span>
+                                <span>Help Desk</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#integration">
+                            <div class="nav-item-left">
+                                <span class="nav-icon">🔗</span>
+                                <span>Integration</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="sidebar-item">
+                        <a href="#feedback">
+                            <div class="nav-item-left">
+                                <span class="nav-icon">👤</span>
+                                <span>Feedback</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Upgrade Pro Promo Card -->
+        <div class="sidebar-promo-card">
+            <button class="promo-close-btn" aria-label="Close">✕</button>
+            <div class="promo-badge-icon">👑</div>
+            <h4 class="promo-title">Upgrade Pro! 🔥</h4>
+            <p class="promo-desc">Higher productivity with better organization</p>
+            <button type="button" class="btn-upgrade-pro">Upgrade Pro</button>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="dash-main">
+
+        <!-- Top Header Navigation -->
+        <header class="dash-topbar">
+            <div class="topbar-page-title">Overview</div>
+
+            <div class="topbar-right">
+                <!-- Search bar -->
+                <div class="topbar-search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search anything..." class="topbar-search-input">
+                    <span class="search-shortcut-key">K ⌘</span>
+                </div>
+
+                <!-- Action icons -->
+                <button type="button" class="topbar-action-btn" title="Help">?</button>
+                <button type="button" class="topbar-action-btn" title="Notifications">
+                    🔔
+                    <span class="notification-dot"></span>
+                </button>
+
+                <!-- User Profile Pill -->
+                <div class="topbar-user-pill" onclick="openSettingsModal()" title="View & Edit Profile">
+                    <div class="user-avatar-img">{{ initials }}</div>
+                    <div class="user-info-text">
+                        <span class="user-display-name">{{ user.name }}</span>
+                        <span class="user-handle">@{{ user.email.split('@')[0] }}</span>
+                    </div>
+                    <span class="user-dropdown-chevron">▼</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Body Content -->
+        <main class="dash-content">
+
+            <!-- Welcome Greeting Row -->
+            <section class="welcome-hero-row">
+                <div>
+                    <h1 class="welcome-heading">Good Morning, {{ user.name.split()[0] }} ✨</h1>
+                    <p class="welcome-subtitle">Here's an overview of your financial health and recent activity.</p>
+                </div>
+                <div class="welcome-actions">
+                    <button type="button" class="btn-filter-dropdown">
+                        <span>This Month</span>
+                        <span>▼</span>
+                    </button>
+                    <button type="button" class="btn-export-dash">
+                        <span>↑</span>
+                        <span>Export</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 4 Top Financial Stat Cards -->
+            <section class="stats-grid-row">
+                <!-- Card 1: Total Balance -->
+                <div class="stat-summary-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon-wrapper icon-purple">💼</div>
+                        <div class="stat-card-values">
+                            <span class="stat-figure">$15,340</span>
+                            <span class="stat-subtext">Net worth across all.</span>
+                        </div>
+                    </div>
+                    <div class="stat-card-bottom">
+                        <span class="stat-category-label">Total Balance</span>
+                        <button class="card-dots-action">•••</button>
+                    </div>
+                </div>
+
+                <!-- Card 2: Monthly Income -->
+                <div class="stat-summary-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon-wrapper icon-orange">💰</div>
+                        <div class="stat-card-values">
+                            <span class="stat-figure">$3,200</span>
+                            <span class="stat-subtext">Total Income this month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card-bottom">
+                        <span class="stat-category-label">Monthly Income</span>
+                        <button class="card-dots-action">•••</button>
+                    </div>
+                </div>
+
+                <!-- Card 3: Monthly Expenses -->
+                <div class="stat-summary-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon-wrapper icon-pink">👛</div>
+                        <div class="stat-card-values">
+                            <span class="stat-figure">$2,475</span>
+                            <span class="stat-subtext">Total Expenses.</span>
+                        </div>
+                    </div>
+                    <div class="stat-card-bottom">
+                        <span class="stat-category-label">Monthly Expenses</span>
+                        <button class="card-dots-action">•••</button>
+                    </div>
+                </div>
+
+                <!-- Card 4: Savings -->
+                <div class="stat-summary-card">
+                    <div class="stat-card-top">
+                        <div class="stat-icon-wrapper icon-blue">💵</div>
+                        <div class="stat-card-values">
+                            <span class="stat-figure">$725</span>
+                            <span class="stat-subtext">This month savings</span>
+                        </div>
+                    </div>
+                    <div class="stat-card-bottom">
+                        <span class="stat-category-label">Savings</span>
+                        <button class="card-dots-action">•••</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Middle Row: Transactions Overview & My Cards -->
+            <section class="mid-overview-row">
+
+                <!-- Left: Transactions Overview Chart Card -->
+                <div class="transactions-chart-card">
+                    <div class="chart-card-header">
+                        <h2 class="chart-card-title">Transactions Overview</h2>
+                        <div class="chart-time-pill-toggle">
+                            <button type="button" class="pill-toggle-btn">Monthly</button>
+                            <button type="button" class="pill-toggle-btn active">Yearly</button>
+                        </div>
+                    </div>
+
+                    <div class="chart-stats-summary-bar">
+                        <div class="chart-headline-metric">
+                            <span class="chart-total-amount">$45,567.00</span>
+                            <span class="chart-pct-badge">↑ 4.9%</span>
+                        </div>
+                        <div class="chart-legends">
+                            <span class="legend-item">
+                                <span class="legend-dot dot-earning"></span> Earning
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-dot dot-spending"></span> Spending
+                            </span>
+                            <span class="legend-item">
+                                <span class="legend-dot dot-savings"></span> Savings
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- SVG Smooth Curved Chart -->
+                    <div class="chart-svg-container">
+                        <svg class="chart-svg" viewBox="0 0 650 200" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="earningGlow" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#4f46e5" stop-opacity="0.18"/>
+                                    <stop offset="100%" stop-color="#4f46e5" stop-opacity="0"/>
+                                </linearGradient>
+                            </defs>
+
+                            <!-- Horizontal Grid Lines -->
+                            <line x1="40" y1="20" x2="630" y2="20" class="chart-grid-line"/>
+                            <text x="15" y="24" class="chart-axis-text">40k</text>
+
+                            <line x1="40" y1="60" x2="630" y2="60" class="chart-grid-line"/>
+                            <text x="15" y="64" class="chart-axis-text">30k</text>
+
+                            <line x1="40" y1="100" x2="630" y2="100" class="chart-grid-line"/>
+                            <text x="15" y="104" class="chart-axis-text">20k</text>
+
+                            <line x1="40" y1="140" x2="630" y2="140" class="chart-grid-line"/>
+                            <text x="15" y="144" class="chart-axis-text">10k</text>
+
+                            <line x1="40" y1="180" x2="630" y2="180" class="chart-grid-line"/>
+                            <text x="15" y="184" class="chart-axis-text">0k</text>
+
+                            <!-- Earning Curve (Blue/Purple) -->
+                            <path d="M 40 170 Q 140 70, 240 50 T 440 120 T 630 180" 
+                                  class="chart-line-earning"/>
+
+                            <!-- Spending Curve (Teal/Green) -->
+                            <path d="M 40 180 Q 140 150, 240 140 T 440 130 T 630 90" 
+                                  class="chart-line-spending"/>
+
+                            <!-- Tooltip pin line at May (x=240, y=50) -->
+                            <line x1="240" y1="50" x2="240" y2="180" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            
+                            <!-- Highlight Point Dot -->
+                            <circle cx="240" cy="50" r="5" fill="#4f46e5" stroke="#ffffff" stroke-width="2.5"/>
+
+                            <!-- Tooltip Box ($22,430) -->
+                            <g class="chart-tooltip-group">
+                                <rect x="205" y="16" width="70" height="26" rx="6" fill="#4f46e5"/>
+                                <polygon points="236,42 244,42 240,46" fill="#4f46e5"/>
+                                <text x="240" y="33" fill="#ffffff" font-size="11" font-weight="700" text-anchor="middle" font-family="inherit">$22,430</text>
+                            </g>
+
+                            <!-- Months labels on X-Axis -->
+                            <text x="50" y="198" class="chart-axis-text">Jan</text>
+                            <text x="100" y="198" class="chart-axis-text">Feb</text>
+                            <text x="150" y="198" class="chart-axis-text">Mar</text>
+                            <text x="200" y="198" class="chart-axis-text">Apr</text>
+                            <text x="240" y="198" class="chart-axis-text" font-weight="700" fill="#4f46e5">May</text>
+                            <text x="290" y="198" class="chart-axis-text">Jun</text>
+                            <text x="340" y="198" class="chart-axis-text">Jul</text>
+                            <text x="390" y="198" class="chart-axis-text">Aug</text>
+                            <text x="440" y="198" class="chart-axis-text">Sep</text>
+                            <text x="490" y="198" class="chart-axis-text">Oct</text>
+                            <text x="540" y="198" class="chart-axis-text">Nov</text>
+                            <text x="600" y="198" class="chart-axis-text">Dec</text>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Right: My Cards Widget -->
+                <div class="my-cards-card">
+                    <div>
+                        <div class="cards-header">
+                            <div>
+                                <h2 class="cards-title">My Cards</h2>
+                                <span class="cards-subtitle">Total 3 cards</span>
+                            </div>
+                            <button class="card-dots-action">•••</button>
+                        </div>
+
+                        <!-- Gradient Debit Card Visual -->
+                        <div class="virtual-card-visual">
+                            <div class="card-top-row">
+                                <div class="card-contactless-box">
+                                    <span class="wifi-wave-icon">)))</span>
+                                    <span class="card-active-pill">Active</span>
+                                </div>
+                                <div class="mastercard-logo-circles">
+                                    <div class="mc-circle-red"></div>
+                                    <div class="mc-circle-yellow"></div>
+                                </div>
+                            </div>
+
+                            <div class="card-number-label">Card Number</div>
+                            <div class="card-number-digits">•••• •••• 6782</div>
+
+                            <div class="card-bottom-row">
+                                <div class="card-meta-group">
+                                    <span class="card-meta-label">EXP</span>
+                                    <span class="card-meta-val">09/29</span>
+                                </div>
+                                <div class="card-meta-group">
+                                    <span class="card-meta-label">CVV</span>
+                                    <span class="card-meta-val">611</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spending limit -->
+                    <div class="card-spending-limit-box">
+                        <span class="spending-limit-title">Spending limit</span>
+                        <div class="spending-limit-amounts">
+                            <span class="spending-limit-bold">$3,884.00</span> used from $20,638.00
+                        </div>
+                        <div class="spending-progress-track">
+                            <div class="spending-progress-fill" style="width: 28%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Bottom Section: Recent Transaction Table -->
+            <section class="recent-transactions-card">
+                <div class="transactions-table-header">
+                    <div class="table-title-group">
+                        <span class="table-header-icon">💳</span>
+                        <h2 class="table-title">Recent Transaction</h2>
+                    </div>
+
+                    <div class="table-controls">
+                        <input type="text" placeholder="Search" class="table-search-input">
+                        <select class="table-filter-select">
+                            <option>All Category</option>
+                            <option>Travel</option>
+                            <option>Bills</option>
+                            <option>Shopping</option>
+                        </select>
+                        <button type="button" class="btn-table-filter">
+                            <span>⚙</span>
+                            <span>Filter</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div style="overflow-x: auto;">
+                    <table class="custom-dash-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;"><input type="checkbox"></th>
+                                <th>Activity</th>
+                                <th>Order ID</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th style="text-align: right;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="activity-cell">
+                                        <div class="activity-icon-container">🏨</div>
+                                        <span class="activity-name-text">Hotel Booking</span>
+                                    </div>
+                                </td>
+                                <td><span class="order-id-text">INV_000076</span></td>
+                                <td>17 Apr, 2026</td>
+                                <td>03:45 PM</td>
+                                <td><span class="price-text">$25,500</span></td>
+                                <td><span class="status-badge success"><span class="status-bullet">●</span> Success</span></td>
+                                <td style="text-align: right;"><button class="card-dots-action">•••</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="activity-cell">
+                                        <div class="activity-icon-container">✈️</div>
+                                        <span class="activity-name-text">Flight Ticket Booking</span>
+                                    </div>
+                                </td>
+                                <td><span class="order-id-text">INV_000075</span></td>
+                                <td>15 Apr, 2026</td>
+                                <td>11:30 AM</td>
+                                <td><span class="price-text">$32,750</span></td>
+                                <td><span class="status-badge pending"><span class="status-bullet">●</span> Pending</span></td>
+                                <td style="text-align: right;"><button class="card-dots-action">•••</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="activity-cell">
+                                        <div class="activity-icon-container">🛒</div>
+                                        <span class="activity-name-text">Grocery Supermarket</span>
+                                    </div>
+                                </td>
+                                <td><span class="order-id-text">INV_000074</span></td>
+                                <td>14 Apr, 2026</td>
+                                <td>09:15 AM</td>
+                                <td><span class="price-text">$1,240</span></td>
+                                <td><span class="status-badge success"><span class="status-bullet">●</span> Success</span></td>
+                                <td style="text-align: right;"><button class="card-dots-action">•••</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="activity-cell">
+                                        <div class="activity-icon-container">💻</div>
+                                        <span class="activity-name-text">Tech &amp; Hardware</span>
+                                    </div>
+                                </td>
+                                <td><span class="order-id-text">INV_000073</span></td>
+                                <td>12 Apr, 2026</td>
+                                <td>06:20 PM</td>
+                                <td><span class="price-text">$8,890</span></td>
+                                <td><span class="status-badge success"><span class="status-bullet">●</span> Success</span></td>
+                                <td style="text-align: right;"><button class="card-dots-action">•••</button></td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox"></td>
+                                <td>
+                                    <div class="activity-cell">
+                                        <div class="activity-icon-container">🏢</div>
+                                        <span class="activity-name-text">Office Workspace Rent</span>
+                                    </div>
+                                </td>
+                                <td><span class="order-id-text">INV_000072</span></td>
+                                <td>10 Apr, 2026</td>
+                                <td>10:00 AM</td>
+                                <td><span class="price-text">$14,250.00</span></td>
+                                <td><span class="status-badge success"><span class="status-bullet">●</span> Success</span></td>
+                                <td style="text-align: right;"><button class="card-dots-action">•••</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
     </div>
 
-    <!-- Profile Hero Card -->
-    <section class="profile-hero-card">
-        <div class="profile-avatar-wrapper">
-            <div class="profile-avatar" aria-label="User Avatar">
-                {{ initials }}
-            </div>
-        </div>
-        <div class="profile-hero-info">
-            <div class="profile-hero-top">
-                <h2 class="profile-name">{{ user.name }}</h2>
-                <span class="profile-status-badge">Active Member</span>
-            </div>
-            <p class="profile-email">{{ user.email }}</p>
-            <div class="profile-metadata-row">
-                <span class="meta-item">
-                    <span class="meta-icon">📅</span> Member since {{ user.joined_date }}
-                </span>
-                <span class="meta-divider">•</span>
-                <span class="meta-item">
-                    <span class="meta-icon">🪙</span> Base Currency: {{ user.currency }}
-                </span>
-                <span class="meta-divider">•</span>
-                <span class="meta-item">
-                    <span class="meta-icon">📱</span> {{ user.phone }}
-                </span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Financial Activity Metrics -->
-    <section class="profile-metrics-section">
-        <h3 class="section-title">Financial Overview</h3>
-        <div class="profile-metrics-grid">
-            <div class="metric-card">
-                <span class="metric-label">Total Spent</span>
-                <div class="metric-value">₹{{ stats.total_spent }}</div>
-                <span class="metric-sub">Across all recorded expenses</span>
-            </div>
-
-            <div class="metric-card">
-                <span class="metric-label">Monthly Budget Left</span>
-                <div class="metric-value metric-value-accent">₹{{ stats.budget_remaining }}</div>
-                <span class="metric-sub">₹{{ user.monthly_budget }} monthly limit</span>
-            </div>
-
-            <div class="metric-card">
-                <span class="metric-label">Transactions</span>
-                <div class="metric-value">{{ stats.total_count }}</div>
-                <span class="metric-sub">Logged financial entries</span>
-            </div>
-
-            <div class="metric-card">
-                <span class="metric-label">Active Categories</span>
-                <div class="metric-value">{{ stats.category_count }}</div>
-                <span class="metric-sub">Food, Bills, Transport &amp; more</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- Settings Grid -->
-    <section class="profile-settings-section">
-        <div class="profile-settings-grid">
-
-            <!-- Personal Information Form Card -->
-            <div class="settings-card">
-                <div class="settings-card-header">
-                    <h3 class="settings-title">Personal Details</h3>
-                    <p class="settings-subtitle">Update your display name and email address.</p>
-                </div>
-                <form action="{{ url_for('update_profile') }}" method="POST" class="settings-form">
-                    <div class="form-group">
-                        <label for="profile_name">Full Name</label>
-                        <input type="text" id="profile_name" name="name" class="form-input" value="{{ user.name }}" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="profile_email">Email Address</label>
-                        <input type="email" id="profile_email" name="email" class="form-input" value="{{ user.email }}" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="profile_phone">Phone Number</label>
-                        <input type="text" id="profile_phone" name="phone" class="form-input" value="{{ user.phone }}" readonly>
-                        <span class="input-hint">Contact administrator to update phone number.</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="profile_currency">Preferred Currency</label>
-                        <input type="text" id="profile_currency" class="form-input" value="{{ user.currency }}" disabled>
-                    </div>
-
-                    <button type="submit" class="btn-primary btn-save">Save Changes</button>
-                </form>
-            </div>
-
-            <!-- Password & Security Card -->
-            <div class="settings-card">
-                <div class="settings-card-header">
-                    <h3 class="settings-title">Security &amp; Password</h3>
-                    <p class="settings-subtitle">Manage your account authentication and credentials.</p>
-                </div>
-                <form action="{{ url_for('update_password') }}" method="POST" class="settings-form">
-                    <div class="form-group">
-                        <label for="current_password">Current Password</label>
-                        <input type="password" id="current_password" name="current_password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="new_password">New Password</label>
-                        <input type="password" id="new_password" name="new_password" class="form-input" placeholder="At least 8 characters" minlength="8" required autocomplete="new-password">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="confirm_password">Confirm New Password</label>
-                        <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="Repeat new password" minlength="8" required autocomplete="new-password">
-                    </div>
-
-                    <div class="security-notice">
-                        <span class="notice-icon">🛡️</span>
-                        <span>Ensure your password has at least 8 characters including letters and numbers.</span>
-                    </div>
-
-                    <button type="submit" class="btn-primary btn-save">Update Password</button>
-                </form>
-            </div>
-
-        </div>
-    </section>
-
-    <!-- Account Preferences Card -->
-    <section class="profile-preferences-section">
-        <div class="preferences-card">
-            <div class="preferences-info">
-                <h4 class="preferences-title">Export Financial Data</h4>
-                <p class="preferences-desc">Download a complete CSV backup of all your recorded transactions and categories.</p>
-            </div>
-            <div class="preferences-actions">
-                <a href="{{ url_for('landing') }}" class="btn-ghost">Back to Home</a>
-                <a href="{{ url_for('logout') }}" class="btn-ghost btn-danger-ghost">Sign Out</a>
-            </div>
-        </div>
-    </section>
 </div>
+
+<!-- Slide-over / Modal for Personal Profile & Account Settings -->
+<div id="settingsModal" class="settings-modal-overlay">
+    <div class="settings-modal-content">
+        <button type="button" class="modal-close-btn" onclick="closeSettingsModal()">✕</button>
+
+        <div style="margin-bottom: 2rem;">
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
+                <div class="user-avatar-img" style="width: 54px; height: 54px; font-size: 1.25rem;">{{ initials }}</div>
+                <div>
+                    <h2 style="font-size: 1.4rem; font-weight: 700; color: #111827; margin: 0;">Personal Profile</h2>
+                    <span class="status-badge success" style="margin-top: 0.35rem;">Active Member</span>
+                </div>
+            </div>
+            <div style="font-size: 0.85rem; color: #6b7280; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <span>📅 Member since {{ user.joined_date }}</span>
+                <span>🪙 Base: {{ user.currency }}</span>
+                <span>📱 {{ user.phone }}</span>
+            </div>
+        </div>
+
+        <!-- Metric summary reference row -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 2rem; background: #f8fafc; padding: 1rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+            <div>
+                <span style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Total Spent</span>
+                <div style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">₹{{ stats.total_spent }}</div>
+            </div>
+            <div>
+                <span style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Remaining</span>
+                <div style="font-size: 1.15rem; font-weight: 700; color: #10b981;">₹{{ stats.budget_remaining }}</div>
+            </div>
+            <div>
+                <span style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Entries</span>
+                <div style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">{{ stats.total_count }}</div>
+            </div>
+            <div>
+                <span style="font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase;">Categories</span>
+                <div style="font-size: 1.15rem; font-weight: 700; color: #0f172a;">{{ stats.category_count }}</div>
+            </div>
+        </div>
+
+        <!-- Personal Information Form -->
+        <div style="margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #f1f5f9;">
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Personal Information</h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.25rem;">Update your name and primary email address.</p>
+            <form action="{{ url_for('update_profile') }}" method="POST">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Full Name</label>
+                    <input type="text" name="name" class="form-input" value="{{ user.name }}" required style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Email Address</label>
+                    <input type="email" name="email" class="form-input" value="{{ user.email }}" required style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <button type="submit" class="btn-primary" style="background: #4f46e5; color: #ffffff; padding: 0.65rem 1.5rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;">Save Changes</button>
+            </form>
+        </div>
+
+        <!-- Security & Password Form -->
+        <div>
+            <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.25rem;">Security &amp; Password</h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 1.25rem;">Ensure your account is protected with a secure password.</p>
+            <form action="{{ url_for('update_password') }}" method="POST">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Current Password</label>
+                    <input type="password" name="current_password" class="form-input" placeholder="••••••••" required style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">New Password</label>
+                    <input type="password" name="new_password" class="form-input" placeholder="Minimum 8 characters" minlength="8" required style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.4rem;">Confirm New Password</label>
+                    <input type="password" name="confirm_password" class="form-input" placeholder="Repeat new password" minlength="8" required style="width: 100%; padding: 0.65rem; border: 1px solid #cbd5e1; border-radius: 8px;">
+                </div>
+                <button type="submit" class="btn-primary" style="background: #111827; color: #ffffff; padding: 0.65rem 1.5rem; border-radius: 8px; border: none; font-weight: 600; cursor: pointer;">Update Password</button>
+            </form>
+        </div>
+
+        <div style="margin-top: 2rem; text-align: right;">
+            <a href="{{ url_for('logout') }}" style="color: #ef4444; font-size: 0.85rem; font-weight: 600; text-decoration: none;">Sign Out of Account →</a>
+        </div>
+    </div>
+</div>
+
+<script>
+function openSettingsModal() {
+    document.getElementById('settingsModal').classList.add('active');
+}
+function closeSettingsModal() {
+    document.getElementById('settingsModal').classList.remove('active');
+}
+window.addEventListener('click', function(e) {
+    var modal = document.getElementById('settingsModal');
+    if (e.target === modal) {
+        closeSettingsModal();
+    }
+});
+</script>
 {% endblock %}
