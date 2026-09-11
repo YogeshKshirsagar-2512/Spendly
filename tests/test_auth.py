@@ -167,7 +167,7 @@ def test_login_success(client):
         follow_redirects=False,
     )
     assert response.status_code == 302
-    assert response.headers["Location"] == "/"
+    assert response.headers["Location"] == "/profile"
 
     # Verify session values
     with client.session_transaction() as sess:
@@ -175,8 +175,8 @@ def test_login_success(client):
         assert sess["user_name"] == "Karan Johar"
         assert sess["user_email"] == "karan@example.com"
 
-    # Follow redirect
-    follow_resp = client.get("/")
+    # Follow redirect to profile
+    follow_resp = client.get("/profile")
     assert "Welcome back, Karan Johar!" in follow_resp.get_data(as_text=True)
 
 
@@ -246,7 +246,7 @@ def test_login_open_redirect_mitigated(client):
         data={"email": "safe@example.com", "password": "password123"},
     )
     assert response.status_code == 302
-    assert response.headers["Location"] == "/"
+    assert response.headers["Location"] == "/profile"
 
     # Protocol-relative URL
     response2 = client.post(
@@ -254,7 +254,7 @@ def test_login_open_redirect_mitigated(client):
         data={"email": "safe@example.com", "password": "password123"},
     )
     assert response2.status_code == 302
-    assert response2.headers["Location"] == "/"
+    assert response2.headers["Location"] == "/profile"
 
 
 def test_logout(client):

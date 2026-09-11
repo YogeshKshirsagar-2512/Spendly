@@ -131,7 +131,7 @@ Rendered HTML response to browser
 - [x] **Step 1:** Database setup in `database/db.py` (`get_db`, `init_db`, `seed_db`)
 - [x] **Step 2:** User registration with password hashing
 - [x] **Step 3:** User login & session management (`/login`, `/logout`)
-- [ ] **Step 4:** User profile view (`/profile`)
+- [x] **Step 4:** User profile view (`/profile`)
 
 - [ ] **Step 5:** Expense listing & monthly summary dashboard
 - [ ] **Step 6:** Category breakdown calculations

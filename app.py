@@ -109,7 +109,7 @@ def register():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if "user_id" in session:
-        return redirect(url_for("landing"))
+        return redirect(url_for("profile"))
 
     next_url = request.args.get("next") or request.form.get("next")
 
@@ -149,7 +149,7 @@ def login():
         # Validate next_url to prevent open redirect vulnerabilities
         if next_url and next_url.startswith("/") and not next_url.startswith("//"):
             return redirect(next_url)
-        return redirect(url_for("landing"))
+        return redirect(url_for("profile"))
 
     return render_template("login.html", next=next_url)
 
@@ -172,13 +172,92 @@ def privacy():
 
 
 # ------------------------------------------------------------------ #
-# Placeholder routes — protected endpoints                           #
+# Profile & Account Management (Step 4)                              #
 # ------------------------------------------------------------------ #
+
+def _get_user_initials(name):
+    """Generates a 2-letter uppercase initials monogram for avatar display."""
+    if not name:
+        return "U"
+    parts = name.strip().split()
+    if len(parts) == 1:
+        return parts[0][:2].upper()
+    return (parts[0][0] + parts[-1][0]).upper()
+
 
 @app.route("/profile")
 @login_required
 def profile():
-    return "Profile page — coming in Step 4"
+    # Hardcoded profile data as explicitly required (not queried from database)
+    user_data = {
+        "name": session.get("user_name", "Nitish Kumar"),
+        "email": session.get("user_email", "nitish@example.com"),
+        "joined_date": "September 2026",
+        "phone": "+91 98765 43210",
+        "currency": "INR (₹)",
+        "monthly_budget": "35,000.00",
+    }
+
+    # Hardcoded financial overview statistics
+    stats = {
+        "total_spent": "14,250.00",
+        "total_count": 28,
+        "category_count": 6,
+        "budget_remaining": "20,750.00",
+    }
+
+    initials = _get_user_initials(user_data["name"])
+
+    return render_template(
+        "profile.html",
+        user=user_data,
+        stats=stats,
+        initials=initials,
+    )
+
+
+@app.route("/profile/update", methods=["POST"])
+@login_required
+def update_profile():
+    name = request.form.get("name", "").strip()
+    email = request.form.get("email", "").strip().lower()
+
+    if not name or not email:
+        flash("Please provide both name and email.", "warning")
+        return redirect(url_for("profile"))
+
+    if "@" not in email or "." not in email.split("@")[-1]:
+        flash("Please enter a valid email address.", "warning")
+        return redirect(url_for("profile"))
+
+    # Update session data so changes reflect immediately across the app
+    session["user_name"] = name
+    session["user_email"] = email
+    flash("Profile updated successfully.", "success")
+    return redirect(url_for("profile"))
+
+
+@app.route("/profile/password", methods=["POST"])
+@login_required
+def update_password():
+    current_pwd = request.form.get("current_password", "")
+    new_pwd = request.form.get("new_password", "")
+    confirm_pwd = request.form.get("confirm_password", "")
+
+    if not current_pwd or not new_pwd or not confirm_pwd:
+        flash("All password fields are required.", "warning")
+        return redirect(url_for("profile"))
+
+    if new_pwd != confirm_pwd:
+        flash("New passwords do not match.", "warning")
+        return redirect(url_for("profile"))
+
+    if len(new_pwd) < 8:
+        flash("New password must be at least 8 characters long.", "warning")
+        return redirect(url_for("profile"))
+
+    flash("Password updated successfully.", "success")
+    return redirect(url_for("profile"))
 
 
 @app.route("/expenses/add")

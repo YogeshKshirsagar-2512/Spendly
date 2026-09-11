@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile — Spendly{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <div class="profile-page-header">
+        <span class="profile-eyebrow">Account Settings</span>
+        <h1 class="profile-page-title">Personal Profile</h1>
+        <p class="profile-page-subtitle">Manage your personal details, credentials, and view an overview of your spending activity.</p>
+    </div>
+
+    <!-- Profile Hero Card -->
+    <section class="profile-hero-card">
+        <div class="profile-avatar-wrapper">
+            <div class="profile-avatar" aria-label="User Avatar">
+                {{ initials }}
+            </div>
+        </div>
+        <div class="profile-hero-info">
+            <div class="profile-hero-top">
+                <h2 class="profile-name">{{ user.name }}</h2>
+                <span class="profile-status-badge">Active Member</span>
+            </div>
+            <p class="profile-email">{{ user.email }}</p>
+            <div class="profile-metadata-row">
+                <span class="meta-item">
+                    <span class="meta-icon">📅</span> Member since {{ user.joined_date }}
+                </span>
+                <span class="meta-divider">•</span>
+                <span class="meta-item">
+                    <span class="meta-icon">🪙</span> Base Currency: {{ user.currency }}
+                </span>
+                <span class="meta-divider">•</span>
+                <span class="meta-item">
+                    <span class="meta-icon">📱</span> {{ user.phone }}
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Financial Activity Metrics -->
+    <section class="profile-metrics-section">
+        <h3 class="section-title">Financial Overview</h3>
+        <div class="profile-metrics-grid">
+            <div class="metric-card">
+                <span class="metric-label">Total Spent</span>
+                <div class="metric-value">₹{{ stats.total_spent }}</div>
+                <span class="metric-sub">Across all recorded expenses</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Monthly Budget Left</span>
+                <div class="metric-value metric-value-accent">₹{{ stats.budget_remaining }}</div>
+                <span class="metric-sub">₹{{ user.monthly_budget }} monthly limit</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Transactions</span>
+                <div class="metric-value">{{ stats.total_count }}</div>
+                <span class="metric-sub">Logged financial entries</span>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-label">Active Categories</span>
+                <div class="metric-value">{{ stats.category_count }}</div>
+                <span class="metric-sub">Food, Bills, Transport &amp; more</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Settings Grid -->
+    <section class="profile-settings-section">
+        <div class="profile-settings-grid">
+
+            <!-- Personal Information Form Card -->
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <h3 class="settings-title">Personal Details</h3>
+                    <p class="settings-subtitle">Update your display name and email address.</p>
+                </div>
+                <form action="{{ url_for('update_profile') }}" method="POST" class="settings-form">
+                    <div class="form-group">
+                        <label for="profile_name">Full Name</label>
+                        <input type="text" id="profile_name" name="name" class="form-input" value="{{ user.name }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profile_email">Email Address</label>
+                        <input type="email" id="profile_email" name="email" class="form-input" value="{{ user.email }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profile_phone">Phone Number</label>
+                        <input type="text" id="profile_phone" name="phone" class="form-input" value="{{ user.phone }}" readonly>
+                        <span class="input-hint">Contact administrator to update phone number.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="profile_currency">Preferred Currency</label>
+                        <input type="text" id="profile_currency" class="form-input" value="{{ user.currency }}" disabled>
+                    </div>
+
+                    <button type="submit" class="btn-primary btn-save">Save Changes</button>
+                </form>
+            </div>
+
+            <!-- Password & Security Card -->
+            <div class="settings-card">
+                <div class="settings-card-header">
+                    <h3 class="settings-title">Security &amp; Password</h3>
+                    <p class="settings-subtitle">Manage your account authentication and credentials.</p>
+                </div>
+                <form action="{{ url_for('update_password') }}" method="POST" class="settings-form">
+                    <div class="form-group">
+                        <label for="current_password">Current Password</label>
+                        <input type="password" id="current_password" name="current_password" class="form-input" placeholder="••••••••" required autocomplete="current-password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_password">New Password</label>
+                        <input type="password" id="new_password" name="new_password" class="form-input" placeholder="At least 8 characters" minlength="8" required autocomplete="new-password">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm_password">Confirm New Password</label>
+                        <input type="password" id="confirm_password" name="confirm_password" class="form-input" placeholder="Repeat new password" minlength="8" required autocomplete="new-password">
+                    </div>
+
+                    <div class="security-notice">
+                        <span class="notice-icon">🛡️</span>
+                        <span>Ensure your password has at least 8 characters including letters and numbers.</span>
+                    </div>
+
+                    <button type="submit" class="btn-primary btn-save">Update Password</button>
+                </form>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Account Preferences Card -->
+    <section class="profile-preferences-section">
+        <div class="preferences-card">
+            <div class="preferences-info">
+                <h4 class="preferences-title">Export Financial Data</h4>
+                <p class="preferences-desc">Download a complete CSV backup of all your recorded transactions and categories.</p>
+            </div>
+            <div class="preferences-actions">
+                <a href="{{ url_for('landing') }}" class="btn-ghost">Back to Home</a>
+                <a href="{{ url_for('logout') }}" class="btn-ghost btn-danger-ghost">Sign Out</a>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
